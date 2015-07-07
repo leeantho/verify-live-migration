@@ -20,7 +20,7 @@ import requests
 import os
 import json
 
-def query_volume_fetch_all_test(username, password, tenant, auth, root_helper, flask_url, volume_id):
+def fetch_volume_luns(username, password, tenant, auth, root_helper, flask_url, volume_id):
     """
     Queries for a specific volume's luns.
 
@@ -70,12 +70,12 @@ if __name__ == '__main__':
     print("\nAll source luns:")
     pprint.pprint(all_luns)
 
-    volume_luns = query_volume_fetch_all_test(args.username,
-                                              args.password,
-                                              args.tenant,
-                                              args.auth,
-                                              args.root_helper,
-                                              flask_url,
-                                              args.volume_id)
+    volume_luns = fetch_volume_luns(args.username,
+                                    args.password,
+                                    args.tenant,
+                                    args.auth,
+                                    args.root_helper,
+                                    flask_url,
+                                    args.volume_id)
     print("\nExisting source luns:")
     pprint.pprint(volume_luns)
