@@ -26,7 +26,7 @@ args = parser.parse_args()
 
 app = Flask(__name__)
 
-@app.route('/get_volume_luns', methods=['GET', 'POST'])
+@app.route('/get_volume_luns', methods=['POST'])
 def get_volume_luns():
     """
     Gets a specific volume's luns.
