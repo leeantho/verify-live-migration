@@ -84,7 +84,7 @@ def get_all_luns():
 def get_dev_disk_bypath():
     print("Getting /dev/disk/by-path output...")
 
-    p = subprocess.Popen(['ls', '/dev/disk/by-path'], stdout=subprocess.PIPE)
+    p = subprocess.Popen(['ls', '/dev/disk/by-path'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out = p.communicate()
     output = out[0].strip().split('\n')
 
