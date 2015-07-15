@@ -26,7 +26,7 @@ import os
 import pprint
 import time
 
-def test_live_migration(username, password, tenant, auth, flask_url_a, flask_url_b, host_a, host_b, server_id, vol_id, runs):
+def test_live_migration(username, password, tenant, auth, flask_url_a, flask_url_b, host_a, host_b, server_id, vol_ids, runs):
     success = 0
     fail = 0
     print("DOING %s RUNS" % runs)
@@ -34,20 +34,34 @@ def test_live_migration(username, password, tenant, auth, flask_url_a, flask_url
         print("\nATTEMPT %s START" % (attempt + 1))
         dest_host = ""
         src_flask = ""
+
+        # Toggle for migrating instances back and forth between hosts.
         if attempt % 2 == 0:
             dest_host = host_b
             src_flask = flask_url_a
         else:
             dest_host = host_a
             src_flask = flask_url_b
-        vol_luns = verify_live_migration_client.fetch_volume_luns(username, password, tenant, auth, "sudo", src_flask, vol_id)
+
+        # Collect a list of all the volume luns on the source.
+        vol_id_list = vol_ids.split(',')
+        vol_luns = []
+        for vol_id in vol_id_list:
+            luns = verify_live_migration_client.fetch_volume_luns(src_flask, vol_id)
+            for lun in luns:
+                if lun not in vol_luns:
+                    vol_luns.append(lun)
         print("Volume luns on source node:")
         pprint.pprint(vol_luns)
+
         print("live-migrate to %s" % dest_host)
         _do_live_migrate(username, password, tenant, auth, dest_host, server_id)
+
         all_luns = verify_live_migration_client.fetch_all_luns(src_flask)
         print("all luns on source node after live migration:")
         pprint.pprint(all_luns)
+
+        # Check that all the volume luns on the source are gone.
         vol_lun_present = False
         for lun in vol_luns:
             if lun in all_luns:
@@ -72,6 +86,7 @@ def _do_live_migrate(username, password, tenant, auth, dest_host, server_id):
     server = nova.servers.get(server_id)
     while server.status != "ACTIVE":
         server = nova.servers.get(server_id)
+        time.sleep(0.1)
 
     print("Live Migration to %s done." % dest_host)
 
@@ -86,7 +101,7 @@ if __name__ == '__main__':
     parser.add_argument("-ip2", help="ip of second flask server", required=True)
     parser.add_argument("-port1", help="port of first flask server", default=5002, type=int)
     parser.add_argument("-port2", help="port of second flask server", default=5002, type=int)
-    parser.add_argument("-v", "--volume-id", help="volume id", required=True)
+    parser.add_argument("-v", "--volume-ids", help="volume ids, comma separated", required=True)
     parser.add_argument("-s", "--server-id", help="server id", required=True)
     parser.add_argument("-r", "--runs", help="number of times to perform live migration", default=2, type=int)
     parser.add_argument("-h1", "--host1", help="name of the first host", required=True)
@@ -105,5 +120,5 @@ if __name__ == '__main__':
                         args.host1,
                         args.host2,
                         args.server_id,
-                        args.volume_id,
+                        args.volume_ids,
                         args.runs)
