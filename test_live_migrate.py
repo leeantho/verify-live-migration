@@ -43,9 +43,7 @@ def run_live_migration(test_env):
         for volume in test_env['volume_ids']:
             try:
                 ssh.connect(hostname=src['host'], username=src['username'], password=src['password'])
-                cmd = export_cmd + " cinder get-volume-paths %s" % volume
-                if test_env['use_multipath']:
-                    cmd += " --multipath"
+                cmd = export_cmd + " cinder get-volume-paths %s --multipath %s" % (volume, test_env['use_multipath'])
                 stdin, stdout, stderr = ssh.exec_command(cmd)
                 vol_paths = stdout.read().strip().split()
                 for path in vol_paths:
