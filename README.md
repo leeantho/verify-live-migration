@@ -2,6 +2,7 @@ Pre-Requisites
 ==============
 
 os-brick -- https://github.com/openstack/os-brick (pull latest master)
+
 python-brick-cinderclient-ext -- https://github.com/openstack/python-brick-cinderclient-ext
 
 The following patch needs to pulled into the python-brick-cinderclient-ext:
