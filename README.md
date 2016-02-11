@@ -1,20 +1,14 @@
-# verify-live-migration
-Script for automating live-migration testing between a controller and compute node.
+Pre-Requisites
+==============
 
-Documentation for usage is in the files currently.
+os-brick -- https://github.com/openstack/os-brick (pull latest master)
+python-brick-cinderclient-ext -- https://github.com/openstack/python-brick-cinderclient-ext
 
-Flask servers must be started on the controller and compute nodes.
+The following patch needs to pulled into the python-brick-cinderclient-ext:
+https://review.openstack.org/#/c/268405/
 
-Run the test_live_migrate script with needed inputs to start automated live-migration.
-
-
-SETUP
+Setup
 =====
-Install verify_live_migration.py on each of the compute hosts,
-and then launch them. 
 
-The test_live_migrate.py and verify_live_migration_client.py
-live on the same host that initiates the tests.
-
-Make sure you can ping both of the compute hosts from the machine you run
-the test_live_migrate.py script.
+When running the script make sure the OS_AUTH_URL environment variable uses the
+IP of the compute-host (parent node) instead of localhost.
